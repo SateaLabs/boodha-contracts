@@ -1863,8 +1863,13 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    modifier checkCanTransfer(address to) {
-        if (whileList[to] != true && !canTransfer) {
+    modifier checkCanTransfer(address from, address to) {
+        if (
+            from != address(0) &&
+            to != address(0) &&
+            !canTransfer &&
+            whileList[to] != true
+        ) {
             revert DelegateNotCanTransfer(canTransfer);
         }
         _;
@@ -1877,7 +1882,7 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    function setWhileList(address account,bool value) external onlyOwner {
+    function setWhileList(address account, bool value) external onlyOwner {
         whileList[account] = value;
     }
 
@@ -1906,6 +1911,7 @@ pragma solidity ^0.8.24;
 
 
 
+
 contract NFTAward is Ownable, DelegateAward, ERC721Enumerable {
     string public baseURI;
 
@@ -1921,10 +1927,12 @@ contract NFTAward is Ownable, DelegateAward, ERC721Enumerable {
         ERC721(name_, symbol_)
     {}
 
-    function tokenURI(uint256 tokenId) public override view virtual returns (string memory) {
-       return _baseURI();
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        return _baseURI();
     }
-    
+
     function setBaseURI(string memory baseURI_) external onlyOwner {
         baseURI = baseURI_;
     }
@@ -1948,11 +1956,11 @@ contract NFTAward is Ownable, DelegateAward, ERC721Enumerable {
         _burn(value);
     }
 
-    function _update(
+    function transferFrom(
+        address from,
         address to,
-        uint256 tokenId,
-        address auth
-    ) internal virtual override checkCanTransfer(to) returns (address) {
-        return super._update(to, tokenId, auth);
+        uint256 tokenId
+    ) public override(ERC721, IERC721) checkCanTransfer(from, to) {
+        super.transferFrom(from, to, tokenId);
     }
 }

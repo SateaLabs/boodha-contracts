@@ -32,6 +32,9 @@ describe("Claimer", function () {
     const NFTAward = await hre.ethers.getContractFactory("NFTAward");
     const nFTAward = await NFTAward.deploy(name, symbol, claimer.getAddress(), true, true);
 
+    await claimer.registerDelegateAwards(karma.getAddress());
+    await claimer.registerDelegateAwards(nFTAward.getAddress());
+
     return { signer, user1, user2, claimer, karma, nFTAward, startTime };
   }
 
@@ -42,8 +45,8 @@ describe("Claimer", function () {
       await expect(claimer.updateSigner(user1.address)).not.to.be.reverted;
       expect(await claimer.adminSigner()).to.be.equals(user1.address);
 
-      expect(await claimer.delegateAwards(karma.getAddress())).to.be.equals(false)
-      expect(await claimer.delegateAwards(nFTAward.getAddress())).to.be.equals(false)
+      expect(await claimer.delegateAwards(karma.getAddress())).to.be.equals(true)
+      expect(await claimer.delegateAwards(nFTAward.getAddress())).to.be.equals(true)
 
       await expect(claimer.registerDelegateAwards(karma.getAddress())).not.to.be.reverted;
       await expect(claimer.registerDelegateAwards(nFTAward.getAddress())).not.to.be.reverted;
@@ -55,6 +58,7 @@ describe("Claimer", function () {
       expect(await claimer.delegateAwards(karma.getAddress())).to.be.equals(false)
       expect(await claimer.delegateAwards(nFTAward.getAddress())).to.be.equals(false)
 
+      expect(await claimer.updateLockTime(10)).not.to.be.reverted;
     });
 
     it("Should owner check the right", async function () {

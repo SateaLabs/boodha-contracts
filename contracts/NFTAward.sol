@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./DelegateAward.sol";
 
@@ -20,10 +21,12 @@ contract NFTAward is Ownable, DelegateAward, ERC721Enumerable {
         ERC721(name_, symbol_)
     {}
 
-    function tokenURI(uint256 tokenId) public override view virtual returns (string memory) {
-       return _baseURI();
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        return _baseURI();
     }
-    
+
     function setBaseURI(string memory baseURI_) external onlyOwner {
         baseURI = baseURI_;
     }
@@ -47,11 +50,11 @@ contract NFTAward is Ownable, DelegateAward, ERC721Enumerable {
         _burn(value);
     }
 
-    function _update(
+    function transferFrom(
+        address from,
         address to,
-        uint256 tokenId,
-        address auth
-    ) internal virtual override checkCanTransfer(to) returns (address) {
-        return super._update(to, tokenId, auth);
+        uint256 tokenId
+    ) public override(ERC721, IERC721) checkCanTransfer(from, to) {
+        super.transferFrom(from, to, tokenId);
     }
 }

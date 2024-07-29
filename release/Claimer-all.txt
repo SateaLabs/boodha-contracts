@@ -1018,8 +1018,13 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    modifier checkCanTransfer(address to) {
-        if (whileList[to] != true && !canTransfer) {
+    modifier checkCanTransfer(address from, address to) {
+        if (
+            from != address(0) &&
+            to != address(0) &&
+            !canTransfer &&
+            whileList[to] != true
+        ) {
             revert DelegateNotCanTransfer(canTransfer);
         }
         _;
@@ -1032,8 +1037,8 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    function setWhileList(address account) external onlyOwner {
-        whileList[account] = true;
+    function setWhileList(address account, bool value) external onlyOwner {
+        whileList[account] = value;
     }
 
     function setDelegate(address _delegate) external onlyOwner {
@@ -1095,6 +1100,10 @@ contract Claimer is Ownable {
         delegateAwards[_delegateAward] = false;
     }
 
+    function updateLockTime(uint256 _lockTime) external onlyOwner {
+        lockTime = _lockTime;
+    }
+
     function claim(
         address to,
         address delegateAward,
@@ -1104,7 +1113,7 @@ contract Claimer is Ownable {
         bytes memory sign
     ) public {
         require(!sequences[sequenceId], "sequence ID illegal");
-        require(!delegateAwards[delegateAward], "delegate award illegal");
+        require(delegateAwards[delegateAward], "delegate award illegal");
         require(block.timestamp - startTime < lockTime, "lock time expired");
         bytes32 _message = keccak256(
             abi.encodePacked(

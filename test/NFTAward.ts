@@ -21,7 +21,7 @@ describe("NFTAward", function () {
     const claimer = await Claimer.deploy(signer.address);
 
     const NFTAward = await hre.ethers.getContractFactory("NFTAward");
-    const nFTAward = await NFTAward.deploy(name,symbol,claimer.getAddress(),true,true);
+    const nFTAward = await NFTAward.deploy(name,symbol,claimer.getAddress(),false,false);
 
     return { signer, user1, user2,claimer,nFTAward };
   }
@@ -32,8 +32,8 @@ describe("NFTAward", function () {
       expect(await nFTAward.name()).to.equal(name);
       expect(await nFTAward.symbol()).to.equal(symbol);
       expect(await nFTAward.cap()).to.equal(-1);
-      expect(await nFTAward.canTransfer()).to.equal(true);
-      expect(await nFTAward.canBurn()).to.equal(true);
+      expect(await nFTAward.canTransfer()).to.equal(false);
+      expect(await nFTAward.canBurn()).to.equal(false);
       expect(await nFTAward.delegate()).to.equal(await claimer.getAddress());
     });
 
@@ -77,44 +77,40 @@ describe("NFTAward", function () {
 
       await nFTAward.capSetting(2);
       await nFTAward.transferSetting(false);
-      await expect( nFTAward.mint(signer.address,1)).to.be.reverted;
+      await expect( nFTAward.mint(signer.address,1)).not.to.be.reverted;
 
-      expect( await nFTAward.totalSupply()).to.be.equals(1);
+      expect( await nFTAward.totalSupply()).to.be.equals(2);
     });
 
     it("Should burn check the right", async function () {
       const { signer, user1, user2,claimer,nFTAward} = await loadFixture(deployFixture);
       await nFTAward.setDelegate(signer.address);
       await nFTAward.mint(user1.address,1);
-      await expect( nFTAward.connect(user1).burn(0)).not.to.be.reverted;
 
-      await nFTAward.burnSetting(false);
-      await nFTAward.mint(user1.address,1);
       await expect( nFTAward.connect(user1).burn(0)).to.be.reverted;
+
+      await nFTAward.burnSetting(true);
+      await expect( nFTAward.connect(user1).burn(0)).not.to.be.reverted;
 
       await nFTAward.burnSetting(true);
       await nFTAward.mint(user1.address,1);
       await nFTAward.transferSetting(false);
-      await expect( nFTAward.connect(user1).burn(0)).to.be.reverted;
+      await expect( nFTAward.connect(user1).burn(0)).not.to.be.reverted;
 
-      expect( await nFTAward.totalSupply()).to.be.equals(2);
+      expect( await nFTAward.totalSupply()).to.be.equals(0);
     });
 
     it("Should transfer check the right", async function () {
       const { signer, user1, user2,claimer,nFTAward} = await loadFixture(deployFixture);
       await nFTAward.setDelegate(signer.address);
       await nFTAward.mint(user1.address,10);
+      await expect( nFTAward.connect(user1).transferFrom(user1.address,user2.address,0)).to.be.reverted;
+      expect(await nFTAward.balanceOf(user2.address)).to.be.equals(0)
+
+      await nFTAward.transferSetting(true);
       await expect( nFTAward.connect(user1).transferFrom(user1.address,user2.address,0)).not.to.be.reverted;
       expect(await nFTAward.balanceOf(user2.address)).to.be.equals(1)
-
-      await nFTAward.burnSetting(false);
-      await expect( nFTAward.connect(user1).transferFrom(user1.address,user2.address,1)).not.to.be.reverted;
-
-      await nFTAward.burnSetting(true);
-      await nFTAward.transferSetting(false);
-      await expect( nFTAward.connect(user1).transferFrom(user1.address,user2.address,2)).to.be.reverted;
-
-      expect(await nFTAward.balanceOf(user2.address)).to.be.equals(2)
+      
       expect( await nFTAward.totalSupply()).to.be.equals(10);
     });
 
@@ -123,11 +119,14 @@ describe("NFTAward", function () {
       await nFTAward.setDelegate(signer.address);
       await nFTAward.transferSetting(false);
 
-      await nFTAward.setWhileList(user1.address,true);
+      // await nFTAward.setWhileList(user1.address,true);
       await nFTAward.mint(user1.address, 10);
+      await nFTAward.burnSetting(true);
+      await nFTAward.connect(user1).burn(0);
 
-      await nFTAward.setWhileList(hre.ethers.ZeroAddress,true);
-      await nFTAward.connect(user1).burn(1);
+      await nFTAward.setWhileList(user1.address,true);
+
+      nFTAward.connect(user1).transferFrom(user1.address,user2.address,1);
     });
   });
 });

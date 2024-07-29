@@ -20,9 +20,9 @@ npx hardhat flatten contracts/NFTAward.sol > release/NFTAward-all.txt
 ## 合约地址
 | Contract      | berachain Bartio Testnet | berachain Bartio Mainnet |
 | ----------- | ----------- | ----------- |
-| Claimer      | 0x1B3e6565f74aA5167Ea59765b7Abb11b49927365       |  0x  |
-| Karma   | 0x111F7402AC51A5391d4036E9CCc427A2e2993761        |  0x  |
-| NFTAward-Test   | 0x5174c6b773Bfe27cd282653E12d742CD02d3D8f3        |  0x   |
+| Claimer      | 0x8CAF0509c74363c938aCD2A33D2c9745Ed0863fa       |  0x  |
+| Karma   | 0x2979be6395f92Dca5B6d99393F7446c5D98808C2        |  0x  |
+| NFTAward-Test   | 0x9594fcdb0a6d691cdff0026750268D3Ce7F254e5        |  0x   |
 
 
 ## 奖品领取

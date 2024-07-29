@@ -34,8 +34,13 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    modifier checkCanTransfer(address to) {
-        if (whileList[to] != true && !canTransfer) {
+    modifier checkCanTransfer(address from, address to) {
+        if (
+            from != address(0) &&
+            to != address(0) &&
+            !canTransfer &&
+            whileList[to] != true
+        ) {
             revert DelegateNotCanTransfer(canTransfer);
         }
         _;
@@ -48,7 +53,7 @@ abstract contract DelegateAward is Ownable, IAward {
         _;
     }
 
-    function setWhileList(address account,bool value) external onlyOwner {
+    function setWhileList(address account, bool value) external onlyOwner {
         whileList[account] = value;
     }
 

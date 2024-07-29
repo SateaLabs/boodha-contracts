@@ -20,9 +20,9 @@ contract Karma is Ownable, DelegateAward, ERC20 {
 
     function mint(address to, uint256 value) external override onlyDelegate {
         uint256 _totalSupply = totalSupply();
-        if(cap==-1 || int256(_totalSupply + value) <= cap){
-              _mint(to, value);
-        }else{
+        if (cap == -1 || int256(_totalSupply + value) <= cap) {
+            _mint(to, value);
+        } else {
             revert("cap!");
         }
     }
@@ -35,7 +35,7 @@ contract Karma is Ownable, DelegateAward, ERC20 {
         address from,
         address to,
         uint256 value
-    ) internal virtual override checkCanTransfer(to) {
+    ) internal virtual override checkCanTransfer(from, to) {
         super._update(from, to, value);
     }
 }

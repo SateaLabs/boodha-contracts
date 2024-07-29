@@ -38,6 +38,10 @@ contract Claimer is Ownable {
         delegateAwards[_delegateAward] = false;
     }
 
+    function updateLockTime(uint256 _lockTime) external onlyOwner {
+        lockTime = _lockTime;
+    }
+
     function claim(
         address to,
         address delegateAward,
@@ -47,7 +51,7 @@ contract Claimer is Ownable {
         bytes memory sign
     ) public {
         require(!sequences[sequenceId], "sequence ID illegal");
-        require(!delegateAwards[delegateAward], "delegate award illegal");
+        require(delegateAwards[delegateAward], "delegate award illegal");
         require(block.timestamp - startTime < lockTime, "lock time expired");
         bytes32 _message = keccak256(
             abi.encodePacked(
