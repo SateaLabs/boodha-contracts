@@ -23,6 +23,10 @@ npx hardhat flatten contracts/NFTAward.sol > release/NFTAward-all.txt
 | Claimer      | 0x8CAF0509c74363c938aCD2A33D2c9745Ed0863fa       |  0x  |
 | Karma   | 0x2979be6395f92Dca5B6d99393F7446c5D98808C2        |  0x  |
 | NFTAward-Test   | 0x9594fcdb0a6d691cdff0026750268D3Ce7F254e5        |  0x   |
+| Boodha bArtio   | 0xDD0819808020f05cE5914CC45B8A4E398fAD6406        |  0x   |
+| KUJI   | 0xA4e5E7C80DE8Ab96b89678b84ff77b4469E34A59        |  0x   |
+| Puffpaw bArtio   | 0x994aCaDA0973349583F2E1fC941a835B6fC5E18f        |  0x   |
+
 
 
 ## 奖品领取
@@ -78,3 +82,18 @@ npx hardhat flatten contracts/NFTAward.sol > release/NFTAward-all.txt
 
 
 
+## NFT Resource
+NFT-1
+name: Boodha bArtio
+symbol: BOODHA
+image: https://api.satea.io/boodha/boodha_bartio.png
+
+NFT-2
+name: KUJI
+symbol: KUJI
+image: https://api.satea.io/boodha/kuji.png
+
+NFT-3
+name: Puffpaw bArtio
+symbol: PUFFPAW
+image: https://api.satea.io/boodha/puffpaw_bartio.png
